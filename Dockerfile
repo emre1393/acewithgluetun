@@ -58,6 +58,8 @@ RUN \
 
 COPY . /
 
+RUN chmod +x /entrypoint.sh
+
 USER appuser
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
