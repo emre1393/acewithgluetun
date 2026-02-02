@@ -1,0 +1,38 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 6878:6878/tcp
+    environment:
+      - TZ=${TZ}
+      - UPDATER_PERIOD=24h
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=${VPN_TYPE}
+      - BLOCK_MALICIOUS=off
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - PORT_FORWARD_ONLY=on
+      - VPN_PORT_FORWARDING=on
+      - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+      - HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE='{"auth":"none"}'
+    volumes:
+      - ${MEDIA_DIR}/gluetun/config:/gluetun
+    restart: unless-stopped
+
+  qbittorrent:
+    image: acestream-http-proxy:gluetun
+    # build the image first with
+    # docker build --no-cache -t acestream-http-proxy:gluetun .
+    # 
+    container_name: acestream_proxy
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    network_mode: "service:gluetun"
