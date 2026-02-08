@@ -29,6 +29,9 @@ services:
     # docker build --no-cache -t acestream-http-proxy:gluetun .
     # 
     container_name: acestream_proxy
+    #use a tmpfs volume for the acestream cache to avoid writing to disk and improve performance
+    tmpfs:
+      - /acestream-cache:size=2g
     depends_on:
       gluetun:
         condition: service_healthy
