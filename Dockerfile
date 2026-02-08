@@ -41,7 +41,6 @@ RUN \
         jq \
         nano \
         libgirepository1.0-dev \
-        ffmpeg \
         libstdc++6 \
     	libgcc-s1 \
     	libglib2.0-0 \
@@ -65,9 +64,11 @@ RUN \
 
 COPY . /
 
+RUN mkdir -p /dev/disk/by-id
+
 RUN chmod +x /entrypoint.sh
 
-RUN chmod 755 /app/data/webui/webplayer
+RUN chown -R appuser:appuser /app && chmod 755 /app/data/webui/webplayer
 
 USER appuser
 
