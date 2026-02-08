@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.10-slim-bookworm
+FROM ubuntu:22.04
 
 LABEL \
     maintainer="Martin Bjeldbak Madsen <me@martinbjeldbak.com>" \
@@ -41,13 +41,20 @@ RUN \
         jq \
         nano \
         libgirepository1.0-dev \
+        ffmpeg \
+        libstdc++6 \
+    	libgcc-s1 \
+    	libglib2.0-0 \
+    	libnss3 \
+    	tzdata \
+    	locales \
     && groupadd --gid 1000 appuser \
     && useradd --uid 1000 --gid 1000 -m appuser \
     && mkdir -p /app \
     && mkdir -p /.cache \
     && curl -fsSL "https://download.acestream.media/linux/acestream_${VERSION}.tar.gz" \
         | tar xzf - -C /app \
-    && apt-get install -y python3-pip libpython3.10  \
+    && apt-get install -y python3.10=3.10.12* python3-pip libpython3.10  \
     && python3.10 -m pip install --upgrade pip \
     && python3.10 -m pip install -r /app/requirements.txt \
     && chown -R appuser:appuser /.cache /app && chmod -R 755 /app \
@@ -59,6 +66,8 @@ RUN \
 COPY . /
 
 RUN chmod +x /entrypoint.sh
+
+RUN chmod 755 /app/data/webui/webplayer
 
 USER appuser
 
