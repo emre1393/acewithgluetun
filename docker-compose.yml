@@ -19,6 +19,8 @@ services:
       - VPN_PORT_FORWARDING=on
       - SERVER_COUNTRIES=${SERVER_COUNTRIES}
       - HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE='{"auth":"none"}'
+#supresses multicast errors in the logs, but may cause issues with ip leak
+#      - FIREWALL_OUTBOUND_SUBNETS=224.0.0.0/4
     volumes:
       - ${MEDIA_DIR}/gluetun/config:/gluetun
     restart: unless-stopped
@@ -31,7 +33,7 @@ services:
     container_name: acestream_proxy
     #use a tmpfs volume for the acestream cache to avoid writing to disk and improve performance
     tmpfs:
-      - /acestream-cache:size=2g
+      - /acestream-cache:mode=766,uid=1000,gid=1000,size=2g
     depends_on:
       gluetun:
         condition: service_healthy
