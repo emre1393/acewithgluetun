@@ -64,8 +64,6 @@ RUN \
 
 COPY . /
 
-RUN mkdir -p /dev/disk/by-id
-
 RUN chmod +x /entrypoint.sh
 
 RUN chown -R appuser:appuser /app && chmod 755 /app/data/webui/webplayer

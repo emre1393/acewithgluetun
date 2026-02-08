@@ -37,5 +37,8 @@ services:
         condition: service_healthy
     environment:
       - TZ=${TZ}
+    #supressing  ls /dev/disk/by-id/ not found errors in the logs
+    volumes:
+      - /home/dev_disk_by-id/:/dev/disk/by-id/
     restart: unless-stopped
     network_mode: "service:gluetun"
