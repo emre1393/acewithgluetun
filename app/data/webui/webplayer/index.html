@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Player</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="player-section">
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls></video>
+            </div>
+
+            <div class="controls-bar">
+                <button id="refreshBtn" class="icon-btn" title="Refresh Page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path>
+                    </svg>
+                </button>
+
+                <div class="input-group">
+                    <input type="text" id="streamId" placeholder="Enter stream ID..." />
+                    <button id="playBtn">Play</button>
+                    <button id="copyBtn" class="icon-btn" title="Copy Stream URL">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="status-icon-wrapper">
+                    <button id="statusBtn" class="status-btn" title="Stream Status">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                    </button>
+                    <div id="statusTooltip" class="tooltip">
+                        <div class="tooltip-content">
+                            <div class="status-item">
+                                <span class="label">Status:</span>
+                                <span id="status-status" class="value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="label">Speed Down:</span>
+                                <span id="status-speed_down" class="value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="label">Speed Up:</span>
+                                <span id="status-speed_up" class="value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="label">Peers:</span>
+                                <span id="status-peers" class="value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="label">Downloaded:</span>
+                                <span id="status-downloaded" class="value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="label">Uploaded:</span>
+                                <span id="status-uploaded" class="value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-text" id="infoText">Ready to play</div>
+            </div>
+        </div>
+
+        <div class="error-section" id="errorSection" style="display: none;">
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="app.js"></script>
+</body>
+</html>
