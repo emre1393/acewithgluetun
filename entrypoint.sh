@@ -11,9 +11,9 @@ ACE_PID=""
 CURRENT_PORT=""
 
 if [[ "${ALLOW_REMOTE_ACCESS:-}" == "yes" ]]; then
-  EXTRA_FLAGS="--bind-all"
+  EXTRA_FLAGS+=" --bind-all"
 else
-  EXTRA_FLAGS=""
+  EXTRA_FLAGS+=""
 fi
 
 
@@ -21,6 +21,16 @@ fi
 log() {
   echo "[entrypoint] $*"
 }
+--cache-max-bytes
+
+cache_argument=""
+# Check acestream cache size if it exists
+if [[ -d "/acestream-cache" ]]; then
+  CACHE_SIZE="$(df -h /acestream-cache | awk 'NR==2 {print int($2)}')"
+  log "AceStream cache size: ${CACHE_SIZE}GB"
+  cache_size_bytes=$((CACHE_SIZE * 1024 * 1024 * 1024 * 80 / 100)) # Use 80% of the cache size
+  cache_argument=" --cache-dir /acestream-cache --cache-max-bytes ${cache_size_bytes}"
+fi
 
 get_vpn_port() {
   curl -sf "${GLUETUN_API}" | jq -r '.port // empty'
@@ -29,7 +39,7 @@ get_vpn_port() {
 start_acestream() {
   local p2p="$1"
   log "Starting AceStream on port ${p2p}"
-  $ACE_CMD --client-console --port "${p2p}" --live-cache-type memory --live-mem-cache-size 1073741824 --log-stdout --log-stdout-level any --disable-sentry $EXTRA_FLAGS &
+  $ACE_CMD --client-console --port "${p2p}" $cache_argument --log-stdout --log-stdout-level any --disable-sentry $EXTRA_FLAGS &
   ACE_PID=$!
   CURRENT_PORT="$p2p"
 }
