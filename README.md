@@ -60,6 +60,14 @@ where `dd1e67078381739d14beca697356ab76d49d1a2d` is the ID of the AceStream chan
 
 A modern, responsive web player for streaming HLS content with real-time stream status monitoring. Written by Copilot in VSCode.
 
+```console
+http://127.0.0.1:6878/webui/webplayer/index.html
+```
+
+<img width="923" height="782" alt="image" src="https://github.com/user-attachments/assets/98c6c871-da90-4044-9cfa-27901a5d7623" />
+
+
+
 ## Features
 
 - **Simple Stream Input**: Enter a stream ID to start playing
