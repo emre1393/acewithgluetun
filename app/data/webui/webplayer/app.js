@@ -68,7 +68,7 @@ async function handlePlay() {
         }
 
         currentStreamData = data.response;
-        infoText.textContent = `Stream ID: ${streamId} | Session: ${currentStreamData.playback_session_id}`;
+        infoText.textContent = `Stream is loading...`;
 
         // Load HLS stream
         loadStream(currentStreamData.playback_url);
@@ -137,23 +137,50 @@ function handleCopyUrl() {
         return;
     }
 
-    navigator.clipboard.writeText(currentStreamData.playback_url)
-        .then(() => {
-            // Provide visual feedback
-            copyBtn.textContent = '✓';
-            copyBtn.style.backgroundColor = 'rgba(16, 185, 129, 0.3)';
-            
-            setTimeout(() => {
-                copyBtn.innerHTML = originalCopyBtnHTML;
-                copyBtn.style.backgroundColor = '';
-            }, 1500);
-            
-            console.log('Stream URL copied to clipboard');
-        })
-        .catch(err => {
-            console.error('Failed to copy URL:', err);
+    // Use Clipboard API if available
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(currentStreamData.playback_url)
+            .then(() => {
+                // Provide visual feedback
+                copyBtn.textContent = '✓';
+                copyBtn.style.backgroundColor = 'rgba(16, 185, 129, 0.3)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalCopyBtnHTML;
+                    copyBtn.style.backgroundColor = '';
+                }, 1500);
+                
+                console.log('Stream URL copied to clipboard');
+            })
+            .catch(err => {
+                console.error('Failed to copy URL:', err);
+                showError('Failed to copy URL to clipboard');
+            });
+    } else {
+        // Fallback: use execCommand
+        const tempInput = document.createElement('input');
+        tempInput.value = currentStreamData.playback_url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                copyBtn.textContent = '✓';
+                copyBtn.style.backgroundColor = 'rgba(16, 185, 129, 0.3)';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalCopyBtnHTML;
+                    copyBtn.style.backgroundColor = '';
+                }, 1500);
+                console.log('Stream URL copied to clipboard (fallback)');
+            } else {
+                showError('Failed to copy URL to clipboard');
+            }
+        } catch (err) {
+            console.error('Fallback failed:', err);
             showError('Failed to copy URL to clipboard');
-        });
+        }
+        document.body.removeChild(tempInput);
+    }
 }
 
 /**
