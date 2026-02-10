@@ -64,7 +64,8 @@ A modern, responsive web player for streaming HLS content with real-time stream 
 http://127.0.0.1:6878/webui/webplayer/index.html
 ```
 
-<img width="923" height="782" alt="image" src="https://github.com/user-attachments/assets/98c6c871-da90-4044-9cfa-27901a5d7623" />
+<img width="1232" height="1250" alt="image" src="https://github.com/user-attachments/assets/2e11a0ce-f888-46cf-8a09-71f3408b06a9" />
+
 
 
 
