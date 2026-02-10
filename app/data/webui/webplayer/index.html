@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Player</title>
+    <title>Web Player for Ace Stream</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
             </div>
 
             <div class="controls-bar">
-                <button id="refreshBtn" class="icon-btn" title="Refresh Page">
+                <button id="refreshBtn" class="icon-btn" data-tooltip="Refresh Page">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 4 23 10 17 10"></polyline>
                         <polyline points="1 20 1 14 7 14"></polyline>
@@ -25,7 +25,12 @@
                 <div class="input-group">
                     <input type="text" id="streamId" placeholder="Enter stream ID..." />
                     <button id="playBtn">Play</button>
-                    <button id="copyBtn" class="icon-btn" title="Copy Stream URL">
+                    <button id="stopBtn" class="icon-btn" data-tooltip="Stop Stream" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        </svg>
+                    </button>
+                    <button id="copyBtn" class="icon-btn" data-tooltip="Copy Stream URL">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
@@ -34,7 +39,7 @@
                 </div>
 
                 <div class="status-icon-wrapper">
-                    <button id="statusBtn" class="status-btn" title="Stream Status">
+                    <button id="statusBtn" class="status-btn" data-tooltip="Stream Status">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M12 6v6l4 2"></path>

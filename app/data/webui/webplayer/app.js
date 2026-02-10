@@ -4,10 +4,12 @@ const STAT_UPDATE_INTERVAL = 1000; // 1 second
 let hls = null;
 let currentStreamData = null;
 let statusPollingInterval = null;
+let intentionallyStopped = false;
 
 // DOM Elements
 const streamIdInput = document.getElementById('streamId');
 const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
 const videoPlayer = document.getElementById('videoPlayer');
 const infoText = document.getElementById('infoText');
 const errorSection = document.getElementById('errorSection');
@@ -16,8 +18,12 @@ const statusBtn = document.getElementById('statusBtn');
 const copyBtn = document.getElementById('copyBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 
+// Store original copy button HTML
+let originalCopyBtnHTML = copyBtn ? copyBtn.innerHTML : '';
+
 // Event Listeners
 playBtn.addEventListener('click', handlePlay);
+stopBtn.addEventListener('click', handleStop);
 copyBtn.addEventListener('click', handleCopyUrl);
 refreshBtn.addEventListener('click', () => location.reload());
 streamIdInput.addEventListener('keypress', (e) => {
@@ -37,6 +43,7 @@ async function handlePlay() {
         return;
     }
 
+    intentionallyStopped = false;
     setLoading(true);
     hideError();
     clearStatus();
@@ -77,6 +84,51 @@ async function handlePlay() {
 }
 
 /**
+ * Handle stop stream
+ */
+async function handleStop() {
+    if (!currentStreamData || !currentStreamData.command_url) {
+        showError('No stream to stop');
+        return;
+    }
+
+    intentionallyStopped = true;
+
+    try {
+        // Send stop command to server
+        const stopUrl = `${currentStreamData.command_url}?method=stop`;
+        const response = await fetch(stopUrl);
+
+        if (!response.ok) {
+            console.warn(`Stop command returned status ${response.status}`);
+        }
+
+        // Stop local playback
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+
+        videoPlayer.src = '';
+        videoPlayer.pause();
+
+        // Clear status polling
+        clearStatus();
+
+        // Update UI
+        stopBtn.disabled = true;
+        playBtn.disabled = false;
+        infoText.textContent = 'Stream stopped';
+
+        console.log('Stream stopped successfully');
+
+    } catch (error) {
+        console.error('Stop error:', error);
+        showError(`Failed to stop stream: ${error.message}`);
+    }
+}
+
+/**
  * Handle copy stream URL
  */
 function handleCopyUrl() {
@@ -85,17 +137,23 @@ function handleCopyUrl() {
         return;
     }
 
-    navigator.clipboard.writeText(currentStreamData.playback_url).then(() => {
-        // Provide visual feedback
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '✓';
-        setTimeout(() => {
-            copyBtn.innerHTML = originalText;
-        }, 1500);
-    }).catch(err => {
-        console.error('Failed to copy URL:', err);
-        showError('Failed to copy URL to clipboard');
-    });
+    navigator.clipboard.writeText(currentStreamData.playback_url)
+        .then(() => {
+            // Provide visual feedback
+            copyBtn.textContent = '✓';
+            copyBtn.style.backgroundColor = 'rgba(16, 185, 129, 0.3)';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalCopyBtnHTML;
+                copyBtn.style.backgroundColor = '';
+            }, 1500);
+            
+            console.log('Stream URL copied to clipboard');
+        })
+        .catch(err => {
+            console.error('Failed to copy URL:', err);
+            showError('Failed to copy URL to clipboard');
+        });
 }
 
 /**
@@ -128,6 +186,7 @@ function loadStream(playbackUrl) {
                 console.warn('Autoplay failed:', err);
                 infoText.textContent = 'Stream loaded. Click play to start.';
             });
+            stopBtn.disabled = false;
             setLoading(false);
         });
 
@@ -197,11 +256,8 @@ async function fetchStreamStatus(statUrl) {
 function updateStatusDisplay(status) {
     // Status
     const statusMap = {
-        'dl': 'Downloading',
-        'uploading': 'Uploading',
-        'idle': 'Idle',
-        'streaming': 'Streaming',
-        'paused': 'Paused'
+        'dl': 'Live',
+        'pref': 'Prebuffering'
     };
 
     document.getElementById('status-status').textContent = statusMap[status.status] || status.status || '-';
@@ -280,6 +336,7 @@ function hideError() {
 function setLoading(isLoading) {
     if (isLoading) {
         playBtn.disabled = true;
+        stopBtn.disabled = true;
         const spinner = document.createElement('span');
         spinner.className = 'spinner';
         spinner.id = 'playBtnSpinner';
@@ -304,6 +361,11 @@ videoPlayer.addEventListener('pause', () => {
 });
 
 videoPlayer.addEventListener('error', (e) => {
+    // Don't show error if user intentionally stopped the stream
+    if (intentionallyStopped) {
+        intentionallyStopped = false;
+        return;
+    }
     console.error('Video error:', e);
     showError('Video playback error');
 });
