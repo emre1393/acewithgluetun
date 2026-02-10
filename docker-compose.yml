@@ -1,7 +1,7 @@
 services:
-  gluetun:
+  gluetunace:
     image: qmcgaw/gluetun
-    container_name: gluetun
+    container_name: gluetunace
     cap_add:
       - NET_ADMIN
     devices:
@@ -35,7 +35,7 @@ services:
     tmpfs:
       - /acestream-cache:mode=766,uid=1000,gid=1000,size=2g
     depends_on:
-      gluetun:
+      gluetunace:
         condition: service_healthy
     environment:
       - TZ=${TZ}
@@ -43,4 +43,4 @@ services:
     volumes:
       - /home/dev_disk_by-id/:/dev/disk/by-id/
     restart: unless-stopped
-    network_mode: "service:gluetun"
+    network_mode: "service:gluetunace"
