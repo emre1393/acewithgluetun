@@ -26,20 +26,21 @@ cache_argument=""
 # Check acestream cache size if it exists
 if [[ -d "/acestream-cache" ]]; then
   CACHE_SIZE="$(df -h /acestream-cache | awk 'NR==2 {print int($2)}')"
-  log "AceStream cache size will be 80 percent of ${CACHE_SIZE}GB"
+  log "AceStream cache size will be 90 percent of ${CACHE_SIZE}GB"
   # Use 80% of the cache size
-  cache_size_bytes=$((CACHE_SIZE * 1024 * 1024 * 1024 * 80 / 100)) 
+  cache_size_bytes=$((CACHE_SIZE * 1024 * 1024 * 1024 * 90 / 100)) 
   cache_argument=" --live-cache-type disk --cache-dir /acestream-cache --live-disk-cache-size ${cache_size_bytes}"
 fi
 
 get_vpn_port() {
-  curl -sf "${GLUETUN_API}" | jq -r '.port // empty'
+#  curl -sf "${GLUETUN_API}" | jq -r '.port // empty'
+  wget -qO- "http://127.0.0.1:8000/v1/portforward" \
+    | grep -o '"port":[0-9]*' | grep -o '[0-9]*'
 }
-
 start_acestream() {
   local p2p="$1"
   log "Starting AceStream on port ${p2p}"
-  $ACE_CMD --client-console --port "${p2p}" $cache_argument --log-stdout --log-stdout-level any --disable-sentry $EXTRA_FLAGS &
+  $ACE_CMD --client-console --port "${p2p}" $cache_argument --disable-sentry $EXTRA_FLAGS &
   ACE_PID=$!
   CURRENT_PORT="$p2p"
 }
