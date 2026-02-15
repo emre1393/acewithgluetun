@@ -22,7 +22,7 @@ services:
 #supresses multicast errors in the logs, but may cause issues with ip leak
 #      - FIREWALL_OUTBOUND_SUBNETS=224.0.0.0/4
     volumes:
-      - ${MEDIA_DIR}/gluetun/config:/gluetun
+      - ${MEDIA_DIR}/gluetunace/config:/gluetun
     restart: unless-stopped
 
   qbittorrent:
