@@ -12,8 +12,6 @@ CURRENT_PORT=""
 
 if [[ "${ALLOW_REMOTE_ACCESS:-}" == "yes" ]]; then
   EXTRA_FLAGS+=" --bind-all"
-else
-  EXTRA_FLAGS+=""
 fi
 
 
