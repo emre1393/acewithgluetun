@@ -25,13 +25,13 @@ services:
       - ${MEDIA_DIR}/gluetunace/config:/gluetun
     restart: unless-stopped
 
-  qbittorrent:
+  acestream_proxy:
     image: acestream-http-proxy:gluetun
     # build the image first with
     # docker build --no-cache -t acestream-http-proxy:gluetun .
     # 
     container_name: acestream_proxy
-    #use a tmpfs volume for the acestream cache to avoid writing to disk and improve performance
+    #use a tmpfs volume for the acestream cache to avoid writing to disk
     tmpfs:
       - /acestream-cache:mode=766,uid=1000,gid=1000,size=2g
     depends_on:
