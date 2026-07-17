@@ -1,6 +1,6 @@
 # AceStream HTTP Proxy + Gluetun P2P port forwarding
 
-Gluetun will create a vpn network and provide forwared port info via its api.
+Gluetun will create a vpn network and provide forwarded port info via its api.
 Then entrypoint.sh will use this api to run acestream with --port $port argument
 In theory, you can also seed the stream while behind an ISP cgnat connection that doesn't let you receive incoming requests.
 
@@ -10,8 +10,8 @@ Also replaced docker-compose.yml file with gluetun + acestream:gluetun (it was f
 
 Acestream Docker image runs the AceStream Engine and exposes its [HTTP API](https://docs.acestream.net/en/developers/connect-to-engine/).
 
-As a result, you will be able to watch AceStreams over HLS or MPEG-TS, without
-needing to install the AceStream player or any other dependencies locally.
+As a result, you will be able to watch AceStream content as HLS or MPEG-TS, without
+needing to install the AceStream player or any other Acestream dependencies locally.
 
 
 ## Usage
