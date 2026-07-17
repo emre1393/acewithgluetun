@@ -1,5 +1,6 @@
 const API_BASE = `http://${window.location.hostname}:${window.location.port || '6878'}`;
 const STAT_UPDATE_INTERVAL = 1000; // 1 second
+const DEFAULT_TITLE = 'Web Player for Ace Stream';
 
 let hls = null;
 let currentStreamData = null;
@@ -33,6 +34,31 @@ streamIdInput.addEventListener('keypress', (e) => {
 });
 
 /**
+ * Fetch content metadata using infohash and update browser tab title
+ */
+async function fetchAndSetTitle(infohash) {
+    try {
+        const analyzeUrl = `${API_BASE}/server/api?api_version=3&method=analyze_content&query=acestream%3A%3Finfohash%3D${encodeURIComponent(infohash)}`;
+        const response = await fetch(analyzeUrl);
+
+        if (!response.ok) {
+            throw new Error(`Analyze API failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.result && data.result.title) {
+            // Limit to 30 characters and remove potentially annoying characters
+            const sanitizedTitle = data.result.title.replace(/[<>]/g, '').trim().substring(0, 30);
+            document.title = `${sanitizedTitle} -- Web Player` || DEFAULT_TITLE;
+        }
+    } catch (error) {
+        console.warn('Failed to fetch content title:', error);
+        document.title = DEFAULT_TITLE;
+    }
+}
+
+/**
  * Handle play button click
  */
 async function handlePlay() {
@@ -47,6 +73,7 @@ async function handlePlay() {
     setLoading(true);
     hideError();
     clearStatus();
+    document.title = DEFAULT_TITLE;
 
     try {
         // Fetch stream manifest
@@ -70,6 +97,11 @@ async function handlePlay() {
         currentStreamData = data.response;
         infoText.textContent = `Stream is loading...`;
 
+        // Fetch and display the actual content title if infohash is present
+        if (currentStreamData.infohash) {
+            fetchAndSetTitle(currentStreamData.infohash);
+        }
+
         // Load HLS stream
         loadStream(currentStreamData.playback_url);
 
@@ -80,6 +112,7 @@ async function handlePlay() {
         console.error('Play error:', error);
         showError(`Failed to load stream: ${error.message}`);
         setLoading(false);
+        document.title = DEFAULT_TITLE;
     }
 }
 
@@ -119,6 +152,7 @@ async function handleStop() {
         stopBtn.disabled = true;
         playBtn.disabled = false;
         infoText.textContent = 'Stream stopped';
+        document.title = DEFAULT_TITLE;
 
         console.log('Stream stopped successfully');
 
