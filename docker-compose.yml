@@ -10,7 +10,7 @@ services:
       - 6878:6878/tcp
     environment:
       - TZ=${TZ}
-      - UPDATER_PERIOD=24h
+      - UPDATER_PERIOD=240h
       - VPN_SERVICE_PROVIDER=protonvpn
       - VPN_TYPE=${VPN_TYPE}
       - BLOCK_MALICIOUS=off
